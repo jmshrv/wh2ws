@@ -1,5 +1,5 @@
 [package]
-name = "ws2wh"
+name = "wh2ws"
 version = "0.1.0"
 edition = "2021"
 
