@@ -22,7 +22,7 @@ fn webhook(path: PathBuf, payload: String, webhooks: &State<WebhookMap>) {
     webhook.0.send(payload).unwrap();
 }
 
-#[get("/websocket/<path..>?channel")]
+#[get("/websocket/<path..>")]
 fn websocket(path: PathBuf, ws: WebSocket, webhooks: &State<WebhookMap>) -> Channel<'static> {
     let path = path.to_string_lossy().to_string();
     let webhook = webhooks.get(&path).expect("Invalid webhook path!");
