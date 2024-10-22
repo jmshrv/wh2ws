@@ -1,5 +1,6 @@
 use std::{collections::HashMap, env, path::PathBuf};
 
+use env_logger::Env;
 use rocket::futures::SinkExt;
 use rocket::State;
 use rocket_ws::Channel;
@@ -17,6 +18,8 @@ type WebhookMap = HashMap<String, (Sender<String>, Receiver<String>)>;
 fn webhook(path: PathBuf, payload: String, webhooks: &State<WebhookMap>) {
     let path = path.to_string_lossy().to_string();
     let webhook = webhooks.get(&path).expect("Invalid webhook path!");
+
+    debug!("Received payload for path {path}: {payload}");
 
     // Send payload to associated websocket stream
     webhook.0.send(payload).unwrap();
@@ -42,6 +45,8 @@ fn websocket(path: PathBuf, ws: WebSocket, webhooks: &State<WebhookMap>) -> Chan
 
 #[launch]
 fn rocket() -> _ {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init(); // what a line
+
     let webhooks = env::var("WEBHOOKS")
         .expect("No WEBHOOKS environment variable set!")
         .split(',')
